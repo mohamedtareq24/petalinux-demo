@@ -63,14 +63,6 @@ The PetaLinux customization lives under `meta-user/` and was applied in this chr
 
 After the PetaLinux bring-up was working, the internal traffic was checked with an ILA. This was mainly used to watch the end-to-end streaming path through the accelerator: AXI DMA MM2S sourcing data out of PS memory, the FIR consuming that stream on its slave AXI-Stream side, and AXI DMA S2MM capturing the FIR output back into memory.
 
-In other words, the useful hardware question was not just whether DMA was enabled, but whether the packet moved cleanly through all three stages:
-
-- MM2S asserted a valid input stream toward the FIR
-- the FIR accepted, processed, and re-framed the packet correctly
-- S2MM observed the returned stream with the expected boundary and wrote it back to DDR
-
-That visibility mattered because the main protocol bug was in the FIR stream framing rather than in the AXI DMA driver itself. The ILA made it possible to see whether `TVALID`, `TREADY`, and especially `TLAST` were aligned across the MM2S → FIR → S2MM path.
-
 
 ![ILA capture of FIR and DMA activity](docs/peta_ila_3.png)
 
