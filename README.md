@@ -30,7 +30,9 @@ This approach was useful because it validated the software flow and the RTL hand
 
 ### 3. PetaLinux bring-up and hardware validation
 
-On target, the board boots into PetaLinux, exposes the AXI DMA and UIO interfaces, and runs the `fir-demo` application. The captured run below shows the system enumerating the devices and successfully completing a 4095-sample transfer.
+On target, the board boots into PetaLinux, exposes the AXI DMA and UIO interfaces, and runs the `fir-demo` application. The captured run below shows the system enumerating the devices and successfully completing a 4095 word transfer.
+```ls /dev/``` shows axidma character device , and uio0 node.
+```ls /usr/bin/``` shows fir-demo binary.
 
 ![PetaLinux userspace validation](docs/zybo_peta.png)
 
