@@ -1,0 +1,30 @@
+# Vivado / PetaLinux build outputs
+build/
+pre-built/
+components/
+petalinux-build.log
+*.jou
+*.log
+*.str
+*.backup
+*.backup.jou
+*.run.xml
+*.wdb
+*.ltx
+*.vcd
+*.sqlite3
+*.o
+*.so
+*.ko
+*.bin
+*.bit
+*.hdf
+*.jou.old
+*.log.old
+*.backup.old
+
+# OS / editor clutter
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
