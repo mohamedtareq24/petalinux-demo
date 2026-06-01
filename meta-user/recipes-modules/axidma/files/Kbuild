@@ -1,0 +1,2 @@
+axidma-objs := axi_dma.o axidma_chrdev.o axidma_dma.o axidma_of.o
+obj-m := axidma.o

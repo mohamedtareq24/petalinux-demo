@@ -1,0 +1,64 @@
+/*
+ * system-user.dtsi — FIR project device tree overlay
+ *
+ * -----------------------------------------------------------------------
+ * IMPORTANT: Before building, verify the AXI DMA and FIR node labels.
+ *
+ * After "petalinux-config --get-hw-description <xsa>", run:
+ *   grep -r "axidma\|dma\|fir" \
+ *     components/plnx_workspace/device-tree/device-tree/pl.dtsi
+ *
+ * Expected: auto-generated pl.dtsi contains a node like:
+ *   axi_dma_0: dma@40400000 { ... };
+ *   fir_top_0: fir_top_0@<addr> { ... };
+ *
+ * Adjust the labels below if Vivado chose different names.
+ * -----------------------------------------------------------------------
+ */
+/include/ "system-conf.dtsi"
+
+/ {
+    /*
+     * axidma_chrdev — bperez77/xilinx_axidma userspace driver.
+     *
+     * "dmas" references the two channels of the AXI DMA:
+     *   channel 0 = MM2S (TX to PL)
+     *   channel 1 = S2MM (RX from PL)
+     *
+     * The label "axi_dma_0" must match what Vivado emitted in pl.dtsi.
+     * If the auto-generated label differs, update both cells here.
+     */
+    axidma_chrdev: axidma_chrdev@0 {
+        compatible = "xlnx,axidma-chrdev";
+        dmas      = <&axi_dma_0 0 &axi_dma_0 1>;
+        dma-names = "tx_channel", "rx_channel";
+    };
+};
+
+/*
+ * Fix xlnx,device-id uniqueness: Vivado 2023.1 emits device-id=0 for BOTH
+ * the MM2S and S2MM channels of a single AXI DMA instance.  The bperez77
+ * axidma driver's axidma_check_unique_ids() rejects duplicate IDs and the
+ * probe fails silently.  Override only the S2MM channel so the IDs become
+ * {0, 1}, matching fir-demo's axidma_twoway_transfer(dev, 0 (tx), ..., 1 (rx), ...).
+ */
+&axi_dma_0 {
+    dma-channel@40400030 {
+        xlnx,device-id = <0x1>;
+    };
+};
+
+/*
+ * Override the auto-generated FIR AXI-Lite node so Linux exposes it
+ * as a UIO device at /dev/uio<N> named "fir".
+ *
+ * axilite_ctrl.cpp (hardware mode) discovers the UIO device by scanning
+ * /sys/class/uio/ for the "fir" name, then mmap()s it — the physical
+ * address is irrelevant to software.
+ *
+ * The label "fir_top_0" must match the label in pl.dtsi.
+ */
+&fir_top_0 {
+    compatible = "generic-uio";
+    uio-name   = "fir";
+};
