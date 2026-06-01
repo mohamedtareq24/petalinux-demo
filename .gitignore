@@ -2,6 +2,7 @@
 build/
 pre-built/
 components/
+images/
 petalinux-build.log
 *.jou
 *.log
